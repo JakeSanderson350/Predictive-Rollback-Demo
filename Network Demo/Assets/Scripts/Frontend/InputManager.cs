@@ -4,7 +4,7 @@ using static UnityEngine.InputSystem.DefaultInputActions;
 
 public class InputManager : MonoBehaviour
 {
-    [SerializeField] PlayerMovement movement;
+    [SerializeField] PlayerMovementPhysics movement;
     public static InputManager instance;
     public InputSystem_Actions actions { get; private set; }
 
