@@ -9,11 +9,16 @@ public class Particle2D : MonoBehaviour
     public float inverseMass;
     public Vector2 accumulatedForces { get; private set; }
 
-    public void FixedUpdate()
+    /*public void FixedUpdate()
     {
         DoFixedUpdate(Time.fixedDeltaTime);
-    }
+    }*/
 
+    public void Tick(float dt)
+    {
+        DoFixedUpdate(dt);
+    }
+    
     public void DoFixedUpdate(float dt)
     {
         // Apply force from each attached ForceGenerator component

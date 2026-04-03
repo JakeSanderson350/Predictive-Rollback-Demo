@@ -12,11 +12,12 @@ public class Player : NetworkBehaviour
         pm = GetComponent<PlayerMovementPhysics>();
     }
 
-    public override void FixedUpdateNetwork()
+    /*public override void FixedUpdateNetwork()
     {
         // 1. Apply input first
         if (GetInput(out NetworkInputData data) && HasStateAuthority)
         {
+           
             pm.SetMoveInput(data.direction);
         }
 
@@ -24,11 +25,29 @@ public class Player : NetworkBehaviour
         if (HasStateAuthority)
         {
             pm.Tick();
+            pm.particle.Tick(Runner.DeltaTime);
             serverInputPosition = transform.position;
         }
         else
         {
             transform.position = serverInputPosition;
+        }
+    }*/
+    
+    public override void FixedUpdateNetwork()
+    {
+        if (HasStateAuthority)
+        {
+            // Just move in a circle, no physics involved at all
+            float t = Runner.SimulationTime;
+            serverInputPosition = new Vector3(Mathf.Cos(t), Mathf.Sin(t), 0f);
+            transform.position = serverInputPosition;
+            Debug.Log($"[HOST] writing pos: {serverInputPosition}");
+        }
+        else
+        {
+            transform.position = serverInputPosition;
+            Debug.Log($"[CLIENT] reading pos: {serverInputPosition}");
         }
     }
     

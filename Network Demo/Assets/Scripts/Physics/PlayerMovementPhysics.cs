@@ -8,7 +8,7 @@ public class PlayerMovementPhysics : ForceGenerator
 
     public bool moveActivated = true;
 
-    Particle2D particle;
+    public Particle2D particle;
 
     public Vector2 moveInput { get; private set; }
     public Vector2 moveForce { get; private set; }
