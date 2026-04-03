@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using static UnityEngine.InputSystem.DefaultInputActions;
 
-public class PlayerMovement : MonoBehaviour
+public class PlayerMovementPhysicsPlayerMovement : MonoBehaviour
 {
     [Header("Move Variables")]
     [SerializeField] float moveSpeed = 7f;
@@ -29,6 +29,10 @@ public class PlayerMovement : MonoBehaviour
         actions.Move.canceled += ctx => moveInput = ctx.ReadValue<Vector2>();
     }
 
+    public void SetMoveInput(Vector3 input)
+    {
+        moveInput = input;
+    }
     // A function like this should be used to set inputs on the server
     // All this script needs to process movement is for the moveInput variable to be set each frame/update
     public void initalizeServerInput()

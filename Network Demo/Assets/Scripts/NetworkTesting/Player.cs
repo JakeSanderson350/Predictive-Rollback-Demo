@@ -3,19 +3,19 @@ using Fusion;
 
 public class Player : NetworkBehaviour
 {
-    private NetworkCharacterController _cc;
+    //private NetworkCharacterController _cc;
+    [SerializeField] PlayerMovementPhysics pm;
 
     private void Awake()
     {
-        _cc = GetComponent<NetworkCharacterController>();
+        pm = GetComponent<PlayerMovementPhysics>();
     }
 
     public override void FixedUpdateNetwork()
     {
         if (GetInput(out NetworkInputData data))
         {
-            data.direction.Normalize();
-            _cc.Move(5*data.direction*Runner.DeltaTime);
+            pm.SetMoveInput(data.direction);
         }
     }
 }

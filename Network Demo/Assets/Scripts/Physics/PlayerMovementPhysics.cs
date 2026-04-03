@@ -21,9 +21,16 @@ public class PlayerMovementPhysics : ForceGenerator
 
     public void initializeClientInput(InputSystem_Actions.PlayerActions actions)
     {
-        actions.Move.performed += ctx => moveInput = ctx.ReadValue<Vector2>(); // moveInput = 
-        actions.Move.canceled += ctx => moveInput = ctx.ReadValue<Vector2>();
+        //actions.Move.performed += ctx => moveInput = ctx.ReadValue<Vector2>(); // moveInput = 
+        //actions.Move.canceled += ctx => moveInput = ctx.ReadValue<Vector2>();
     }
+
+    public void SetMoveInput(Vector3 input)
+    {
+        input.y = input.z;
+        moveInput = input;
+    }
+
 
     // A function like this should be used to set inputs on the server
     // All this script needs to process movement is for the moveInput variable to be set each frame/update

@@ -79,7 +79,7 @@ PrefabInstance:
     - target: {fileID: 8797261133761393913, guid: ca2dff5d66cf2d7428d1aef7d06d0ce9, type: 3}
       propertyPath: 'NetworkedBehaviours.Array.data[1]'
       value: 
-      objectReference: {fileID: 1272366440124404048}
+      objectReference: {fileID: 3568513982634904030}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -92,10 +92,7 @@ PrefabInstance:
       addedObject: {fileID: 2313298543235548135}
     - targetCorrespondingSourceObject: {fileID: 5619336700647096589, guid: ca2dff5d66cf2d7428d1aef7d06d0ce9, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 395749317256589727}
-    - targetCorrespondingSourceObject: {fileID: 5619336700647096589, guid: ca2dff5d66cf2d7428d1aef7d06d0ce9, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1272366440124404048}
+      addedObject: {fileID: 3568513982634904030}
   m_SourcePrefab: {fileID: 100100000, guid: ca2dff5d66cf2d7428d1aef7d06d0ce9, type: 3}
 --- !u!1 &416944954645992718 stripped
 GameObject:
@@ -127,32 +124,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b83c52946e0edf247a8a5a8efc8b7214, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!143 &395749317256589727
-CharacterController:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 416944954645992718}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Height: 1
-  m_Radius: 0.5
-  m_SlopeLimit: 45
-  m_StepOffset: 0.3
-  m_SkinWidth: 0.08
-  m_MinMoveDistance: 0.001
-  m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &1272366440124404048
+--- !u!114 &3568513982634904030
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -161,16 +133,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 416944954645992718}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 378411a89480da345945c2f888327a2d, type: 3}
+  m_Script: {fileID: 158639473, guid: e725a070cec140c4caffb81624c8c787, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _stateAuthorityChangeErrorCorrectionDelta: 0
-  gravity: 0
-  jumpImpulse: 0
-  acceleration: 0
-  braking: 0
-  maxSpeed: 0
-  rotationSpeed: 150
+  SyncScale: 0
+  SyncParent: 0
+  _autoAOIOverride: 1
+  DisableSharedModeInterpolation: 1
 --- !u!114 &3431003126757580268 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 7471457370620676591, guid: ca2dff5d66cf2d7428d1aef7d06d0ce9, type: 3}
