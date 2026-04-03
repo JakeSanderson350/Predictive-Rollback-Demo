@@ -76,16 +76,33 @@ public class StartConnection : MonoBehaviour, INetworkRunnerCallbacks
     {
         
     }
-
+    
     public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
     {
-        Debug.Log($"OnPlayerJoined: {player} IsServer: {runner.IsServer}");
+        Debug.Log($"OnPlayerJoined - IsServer: {runner.IsServer} player: {player} LocalPlayer: {runner.LocalPlayer}");
+    
         if (runner.IsServer)
         {
-            // Create a unique position for the player
             Vector3 spawnPosition = new Vector3((player.RawEncoded % runner.Config.Simulation.PlayerCount) * 3, 1, 0);
-            NetworkObject networkPlayerObject = runner.Spawn(_playerPrefab, spawnPosition, Quaternion.identity, player);
-            // Keep track of the player avatars for easy access
+            NetworkObject networkPlayerObject = runner.Spawn(
+                _playerPrefab, 
+                spawnPosition, 
+                Quaternion.identity, 
+                player  // ← log what this value is for each spawn
+            );
+        
+            // Mark new object as interesting to all existing players
+            foreach (var p in runner.ActivePlayers)
+            {
+                networkPlayerObject.SetPlayerAlwaysInterested(p, true);
+            }
+
+            // Mark ALL existing objects as interesting to the new player
+            foreach (var kvp in _spawnedCharacters)
+            {
+                kvp.Value.SetPlayerAlwaysInterested(player, true);
+            }
+            Debug.Log($"Spawned {networkPlayerObject.Id} with InputAuthority: {player}");
             _spawnedCharacters.Add(player, networkPlayerObject);
         }
     }

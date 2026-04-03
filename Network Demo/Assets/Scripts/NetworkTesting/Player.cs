@@ -3,52 +3,56 @@ using Fusion;
 
 public class Player : NetworkBehaviour
 {
-    //private NetworkCharacterController _cc;
     [SerializeField] PlayerMovementPhysics pm;
-    [Networked] private Vector3 serverInputPosition { get; set; }
+    [Networked] public Vector3 serverInputPosition { get; set; }
+    
+    private ChangeDetector _changeDetector;
 
     private void Awake()
     {
         pm = GetComponent<PlayerMovementPhysics>();
     }
 
-    /*public override void FixedUpdateNetwork()
+    public override void Spawned()
     {
-        // 1. Apply input first
-        if (GetInput(out NetworkInputData data) && HasStateAuthority)
-        {
-           
-            pm.SetMoveInput(data.direction);
-        }
+        //get a change detector from photon
+        _changeDetector = GetChangeDetector(ChangeDetector.Source.SimulationState);
+        //Debug.Log($"[SPAWNED] Object: {Object.Id} HasStateAuthority: {HasStateAuthority} HasInputAuthority: {HasInputAuthority} IsServer: {Runner.IsServer}");
+    }
 
-        // 2. Then read/apply position
-        if (HasStateAuthority)
-        {
-            pm.Tick();
-            pm.particle.Tick(Runner.DeltaTime);
-            serverInputPosition = transform.position;
-        }
-        else
-        {
-            transform.position = serverInputPosition;
-        }
-    }*/
-    
-    public override void FixedUpdateNetwork()
+    //this is run every frame so good for detecting visual changes on the client
+    public override void Render()
     {
-        if (HasStateAuthority)
+        foreach (var change in _changeDetector.DetectChanges(this))
         {
-            // Just move in a circle, no physics involved at all
-            float t = Runner.SimulationTime;
-            serverInputPosition = new Vector3(Mathf.Cos(t), Mathf.Sin(t), 0f);
-            transform.position = serverInputPosition;
-            Debug.Log($"[HOST] writing pos: {serverInputPosition}");
-        }
-        else
-        {
-            transform.position = serverInputPosition;
-            Debug.Log($"[CLIENT] reading pos: {serverInputPosition}");
+            switch (change)
+            {
+                case nameof(serverInputPosition):
+                    Debug.Log($"[CHANGED] Object: {Object.Id} new pos: {serverInputPosition}");
+                    transform.position = serverInputPosition;
+                    break;
+            }
         }
     }
-    
+
+    public override void FixedUpdateNetwork()
+    {
+        //get the input 
+        if (GetInput(out NetworkInputData data))
+        {
+            pm.SetMoveInput(data.direction);
+        }
+        
+        if (HasStateAuthority)
+        {
+            float t = Runner.SimulationTime;
+            //serverInputPosition = new Vector3(Mathf.Cos(t), Mathf.Sin(t), 0f);
+            //update the physics
+            pm.Tick();
+            //update the particle
+            pm.particle.Tick(Runner.DeltaTime);
+            serverInputPosition = transform.position;
+            Debug.Log($"[HOST] Object: {Object.Id} writing pos: {serverInputPosition}");
+        }
+    }
 }
