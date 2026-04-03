@@ -39,7 +39,7 @@ public class PlayerMovementPhysics : ForceGenerator
 
     }
 
-    private void FixedUpdate()
+    /*private void FixedUpdate()
     {
         if (moveActivated)
         {
@@ -48,6 +48,15 @@ public class PlayerMovementPhysics : ForceGenerator
             SetRotation();
         }
 
+    }*/
+
+    public void Tick()
+    {
+        if (moveActivated)
+        {
+            Move();
+            SetRotation();
+        }
     }
     void Move()
     {
