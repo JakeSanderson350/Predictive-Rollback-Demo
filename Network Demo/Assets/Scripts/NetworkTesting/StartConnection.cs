@@ -36,21 +36,37 @@ public class StartConnection : MonoBehaviour, INetworkRunnerCallbacks
         });
     }
     
-    private void OnGUI()
+    //private void OnGUI()
+    //{
+    //    if (_runner == null)
+    //    {
+    //        if (GUI.Button(new Rect(0,0,200,40), "Host"))
+    //        {
+    //            StartGame(GameMode.Host);
+    //        }
+    //        if (GUI.Button(new Rect(0,40,200,40), "Join"))
+    //        {
+    //            StartGame(GameMode.Client);
+    //        }
+    //    }
+    //}
+
+    public void JoinAsHost()
     {
         if (_runner == null)
         {
-            if (GUI.Button(new Rect(0,0,200,40), "Host"))
-            {
-                StartGame(GameMode.Host);
-            }
-            if (GUI.Button(new Rect(0,40,200,40), "Join"))
-            {
-                StartGame(GameMode.Client);
-            }
+            StartGame(GameMode.Host);
         }
     }
-    
+
+    public void JoinAsClient()
+    {
+        if (_runner == null)
+        {
+            StartGame(GameMode.Client);
+        }
+    }
+
     public void OnObjectExitAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player)
     {
         throw new NotImplementedException();
