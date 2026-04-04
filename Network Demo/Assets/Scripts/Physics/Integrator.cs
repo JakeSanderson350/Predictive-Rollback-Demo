@@ -11,6 +11,28 @@ public static class Integrator
         particle.velocity += particle.acceleration * dt;
         particle.velocity *= Mathf.Pow(particle.damping, dt);
     }
+
+    public static Particle2D TempIntegrate(Particle2D particle, float dt)
+    {
+        Particle2D temp = new Particle2D();
+        
+        //this transfrom position will not work
+        temp.transform.position = particle.transform.position;
+        temp.velocity = particle.velocity;
+        temp.acceleration = particle.acceleration;
+        temp.inverseMass = particle.inverseMass;
+        temp.damping = particle.damping;
+        
+        
+        temp.transform.position += (temp.velocity * dt).ToVector3(0);
+
+        temp.acceleration = temp.accumulatedForces * temp.inverseMass + temp.gravity;
+
+        temp.velocity += temp.acceleration * dt;
+        temp.velocity *= Mathf.Pow(temp.damping, dt);
+        
+        return temp;
+    }
 }
 
 public static class VectorExtensions

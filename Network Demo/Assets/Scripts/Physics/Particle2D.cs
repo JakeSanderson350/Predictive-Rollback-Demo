@@ -37,4 +37,14 @@ public class Particle2D : MonoBehaviour
     {
         accumulatedForces += force;
     }
+
+    public Particle2D GetUpdateParticle(float dt)
+    {
+        System.Array.ForEach(GetComponents<ForceGenerator>(), generator => { if (generator.enabled) generator.UpdateForce(this); });
+
+        var temp = Integrator.TempIntegrate(this, dt);
+        ClearForces();
+
+        return temp;
+    }
 }

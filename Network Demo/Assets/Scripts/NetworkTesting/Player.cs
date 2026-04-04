@@ -8,9 +8,13 @@ public class Player : NetworkBehaviour
     
     private ChangeDetector _changeDetector;
 
+    private PredictiveBuffer<Particle2D> test;
+
     private void Awake()
     {
+        //test = new(2);
         pm = GetComponent<PlayerMovementPhysics>();
+        //test.InitSimulation(Vector3.zero, pm);
     }
 
     public override void Spawned()
@@ -35,6 +39,7 @@ public class Player : NetworkBehaviour
         }
     }
 
+   
     public override void FixedUpdateNetwork()
     {
         //get the input 
