@@ -73,11 +73,11 @@ public class PlayerMovementPhysics : ForceGenerator, IPhySim<Particle2D>
         // should be snappy but not jarring
         if ((moveInputValue.x> 0 && particle.velocity.x < 0) || (moveInputValue.x < 0 && particle.velocity.x > 0))
         {
-            particle.velocity.Set(moveInputValue.x * moveSpeed, particle.velocity.y);
+            particle.velocity.Set((int)(moveInputValue.x * moveSpeed * Particle2D.FLOAT_CONVERSION), particle.velocity.y);
         }
         if ((moveInputValue.y > 0 && particle.velocity.y < 0) || (moveInputValue.y < 0 && particle.velocity.y > 0))
         {
-            particle.velocity.Set(particle.velocity.x, moveInputValue.y * moveSpeed);
+            particle.velocity.Set(particle.velocity.x, (int)(moveInputValue.y * moveSpeed * Particle2D.FLOAT_CONVERSION));
         }
         // -------------------- PLAYER MOVEMENT ----------------------- \\
 
@@ -87,7 +87,7 @@ public class PlayerMovementPhysics : ForceGenerator, IPhySim<Particle2D>
         // -------------------- CLAMP SPEED ----------------------- \\
 
         // clamp to a max speed to keep the acceleration on the move without a big mess
-        particle.velocity = Vector2.ClampMagnitude(particle.velocity, (speedClamp));
+        particle.velocity = VectorExtensions.ClampMagnitude(particle.velocity, speedClamp * Particle2D.FLOAT_CONVERSION);
     }
 
     public override void UpdateForce(Particle2D particle)
@@ -105,7 +105,7 @@ public class PlayerMovementPhysics : ForceGenerator, IPhySim<Particle2D>
         moveActivated = value;
         if (!value)
         {
-            particle.velocity = Vector3.zero;
+            particle.velocity = Vector2Int.zero;
         }
     }
 
