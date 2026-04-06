@@ -204,4 +204,13 @@ public class StartConnection : MonoBehaviour, INetworkRunnerCallbacks
     {
         
     }
+
+    public void SimulateLatency()
+    {
+        //PhotonNetwork.NetworkingClient.LoadBalancingPeer.IsSimulationEnabled = true;
+        //PhotonNetwork.NetworkingClient.LoadBalancingPeer.NetworkSimulationSettings.IncomingLag = 200; // ms
+        //PhotonNetwork.NetworkingClient.LoadBalancingPeer.NetworkSimulationSettings.OutgoingLag = 200; // ms
+    }
+
+
 }

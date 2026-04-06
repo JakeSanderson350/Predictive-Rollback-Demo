@@ -102,9 +102,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a647a6dd16bc68440a6875a6cbef776f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeed: 7
-  maxSpeed: 2
+  moveSpeed: 1000
+  maxSpeed: 4
   moveActivated: 1
+  particle: {fileID: 0}
 --- !u!114 &7743888273628134042
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -118,7 +119,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   velocity: {x: 0, y: 0}
-  damping: 0.15
+  damping: 0.005
   acceleration: {x: 0, y: 0}
   gravity: {x: 0, y: 0}
   inverseMass: 1

@@ -1,10 +1,13 @@
 using System.Numerics;
 using UnityEngine;
+using static Unity.Collections.Unicode;
 using Vector2 = UnityEngine.Vector2;
 using Vector3 = UnityEngine.Vector3;
 
 public class PlayerMovementPhysics : ForceGenerator, IPhySim<Particle2D>
 {
+    [SerializeField] bool isLocalPrediction = false;
+
     [Header("Move Variables")]
     [SerializeField] float moveSpeed = 7f;
     [SerializeField] float maxSpeed = 2f;
@@ -24,12 +27,18 @@ public class PlayerMovementPhysics : ForceGenerator, IPhySim<Particle2D>
 
     public void initializeClientInput(InputSystem_Actions.PlayerActions actions)
     {
-        //actions.Move.performed += ctx => moveInput = ctx.ReadValue<Vector2>(); // moveInput = 
-        //actions.Move.canceled += ctx => moveInput = ctx.ReadValue<Vector2>();
+        if (!isLocalPrediction)
+            return;
+
+        actions.Move.performed += ctx => moveInput = ctx.ReadValue<Vector2>(); // moveInput = 
+        actions.Move.canceled += ctx => moveInput = ctx.ReadValue<Vector2>();
     }
 
     public void SetMoveInput(Vector3 input)
     {
+        if (isLocalPrediction)
+            return;
+
         input.y = input.z;
         moveInput = input;
     }
@@ -42,16 +51,14 @@ public class PlayerMovementPhysics : ForceGenerator, IPhySim<Particle2D>
 
     }
 
-    /*private void FixedUpdate()
+    private void FixedUpdate()
     {
-        if (moveActivated)
+        if (isLocalPrediction)
         {
-            Move();
-
-            SetRotation();
+            Tick();
+            particle.Tick(Time.deltaTime);
         }
-
-    }*/
+    }
 
     public void Tick()
     {
