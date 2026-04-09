@@ -51,14 +51,14 @@ public class PlayerMovementPhysics : ForceGenerator, IPhySim<Particle2D>
 
     }
 
-    private void FixedUpdate()
+    /*private void FixedUpdate()
     {
         if (isLocalPrediction)
         {
             Tick();
             particle.Tick(Time.deltaTime);
         }
-    }
+    }*/
 
     public void Tick()
     {

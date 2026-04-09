@@ -26,9 +26,6 @@ public class Player : NetworkBehaviour
     private List<InputSnapShot> inputSnapShots;
     private List<PositionSnapshot> positionSnapshots;
     
-
-    private int bufferHead = 0;
-    
     private void Awake()
     {
         //test = new(2);
@@ -46,7 +43,13 @@ public class Player : NetworkBehaviour
         
         //local player - on client
         if (HasInputAuthority)
+        {
             inputSnapShots = new();
+            
+            //this needs to be here so that is done on the network correctly
+            GetComponent<LocalSimulationManager>().Init();
+        }
+        
 
         //remote player - on client
         if (!HasInputAuthority && !HasStateAuthority)
@@ -63,16 +66,13 @@ public class Player : NetworkBehaviour
             switch (change)
             {
                 case nameof(serverInputPosition):
-                    if (HasInputAuthority)
+                    if (HasInputAuthority && !HasStateAuthority)
                     {
                         //reconsiliation
-                        Reconciliation(Runner.Tick );
-
-                       
+                        Reconciliation(Runner.Tick);
                     }
                     else
                     {
-
                         if (positionSnapshots != null)
                         {
                             var positionSnap = new PositionSnapshot();
@@ -100,6 +100,7 @@ public class Player : NetworkBehaviour
     }
 
    
+    //this can run multiple times per frame
     public override void FixedUpdateNetwork()
     {
         //get the input 
@@ -110,18 +111,26 @@ public class Player : NetworkBehaviour
             //only for local player
             if (HasInputAuthority)
             {
+              
                 var input = new InputSnapShot();
             
                 input.direction = data.direction;
                 input.tick = Runner.Tick;
             
                 inputSnapShots.Add(input);
-
+                
+                if (Runner.IsForward)
+                {
+                    LocalSimulationManager.instance.SimulateLocal(Runner.DeltaTime, data.direction);
+                }
+               // LocalSimulationManager.instance.SimulateLocal(Runner.DeltaTime, data.direction);
+                
             }
             
            
         }
         
+        //update server physics
         if (HasStateAuthority)
         {
             //update the physics
@@ -171,24 +180,31 @@ public class Player : NetworkBehaviour
         if (Vector2.Distance(transform.position, serverInputPosition) > 0.5f)
         {
             transform.position = serverInputPosition;
+            LocalSimulationManager.instance.SetCorrection(serverInputPosition);
         }
         else
         {
             return;
         }
         
-        
         //resimulate based off of positon
         for (int i = 0; i < inputSnapShots.Count - 1; i++)
         {
-            for (int j = i; j < inputSnapShots.Count; j++)
+            if (inputSnapShots[i].tick <= targetTick
+                && inputSnapShots[i + 1].tick >= targetTick)
             {
-                pm.SetMoveInput(inputSnapShots[j].direction);
-                pm.Tick();
-                pm.particle.Tick(Runner.DeltaTime);
+                for (int j = i; j < inputSnapShots.Count; j++)
+                {
+                    pm.SetMoveInput(inputSnapShots[j].direction);
+                    pm.Tick();
+                    pm.particle.Tick(Runner.DeltaTime);
+                }
+                break;
             }
-            break;
+           
         }
+        
+        
         
     }
 }
