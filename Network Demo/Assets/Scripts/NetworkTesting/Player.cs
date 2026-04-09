@@ -48,6 +48,7 @@ public class Player : NetworkBehaviour
             
             //this needs to be here so that is done on the network correctly
             GetComponent<LocalSimulationManager>().Init();
+            GetComponent<ServerSimulationManager>().Init();
         }
         
 
@@ -122,6 +123,8 @@ public class Player : NetworkBehaviour
                 if (Runner.IsForward)
                 {
                     LocalSimulationManager.instance.SimulateLocal(Runner.DeltaTime, data.direction);
+                    ServerSimulationManager.instance.SimulateServer(serverInputPosition); // Runner.DeltaTime, data.direction
+
                 }
                // LocalSimulationManager.instance.SimulateLocal(Runner.DeltaTime, data.direction);
                 
