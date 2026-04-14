@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class LocalSimulationManager : MonoBehaviour
 {
@@ -46,6 +47,10 @@ public class LocalSimulationManager : MonoBehaviour
         if (localSimulationRef != null)
         {
             localSimulationRef.transform.position = transform.position;
+
+            Particle2D particle = localPm.particle;
+            particle.positionX = (long)(transform.position.x * PhysicsConstants.FP_SCALE);
+            particle.positionY = (long)(transform.position.y * PhysicsConstants.FP_SCALE);
         }
     }
     
