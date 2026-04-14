@@ -102,6 +102,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a647a6dd16bc68440a6875a6cbef776f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isLocalPrediction: 0
   moveSpeed: 1000
   maxSpeed: 4
   moveActivated: 1
@@ -118,11 +119,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 617c89ccd859ca34191718e86be5f6c9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  velocity: {x: 0, y: 0}
-  damping: 0.005
-  acceleration: {x: 0, y: 0}
-  gravity: {x: 0, y: 0}
+  positionX: 0
+  positionY: 0
+  velocityX: 0
+  velocityY: 0
+  accelerationX: 0
+  accelerationY: 0
+  accumulatedForceX: 0
+  accumulatedForceY: 0
   inverseMass: 1
+  damping: 0.8
 --- !u!114 &8797261133761393913
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -156,16 +156,16 @@ public class StartConnection : MonoBehaviour, INetworkRunnerCallbacks
         var data = new NetworkInputData();
 
         if (Input.GetKey(KeyCode.W))
-            data.direction += Vector3.forward;
+            data.direction += Vector2.up;
 
         if (Input.GetKey(KeyCode.S))
-            data.direction += Vector3.back;
+            data.direction += Vector2.down;
 
         if (Input.GetKey(KeyCode.A))
-            data.direction += Vector3.left;
+            data.direction += Vector2.left;
 
         if (Input.GetKey(KeyCode.D))
-            data.direction += Vector3.right;
+            data.direction += Vector2.right;
 
         input.Set(data);
     }

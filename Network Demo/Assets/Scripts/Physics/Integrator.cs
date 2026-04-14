@@ -2,37 +2,48 @@ using UnityEngine;
 
 public static class Integrator
 {
-    public static void Integrate(Particle2D particle, float dt)
+    public static Particle2D Integrate(Particle2D p, long dt)
     {
-        particle.transform.position += (particle.velocity * dt).ToVector3(0);
+        // Update position:  pos += velocity * dt
+        p.positionX += (p.velocityX * dt) / PhysicsConstants.FP_SCALE;
+        p.positionY += (p.velocityY * dt) / PhysicsConstants.FP_SCALE;
 
-        particle.acceleration = particle.accumulatedForces * particle.inverseMass + particle.gravity;
+        // Compute acceleration:  a = F * inverseMass + gravity
+        p.accelerationX = (p.accumulatedForceX * p.inverseMass) / PhysicsConstants.FP_SCALE + PhysicsConstants.FP_GRAVITY_X;
+        p.accelerationY = (p.accumulatedForceY * p.inverseMass) / PhysicsConstants.FP_SCALE + PhysicsConstants.FP_GRAVITY_Y;
 
-        particle.velocity += particle.acceleration * dt;
-        particle.velocity *= Mathf.Pow(particle.damping, dt);
+        // Update velocity:  vel += acceleration * dt
+        p.velocityX += (p.accelerationX * dt) / PhysicsConstants.FP_SCALE;
+        p.velocityY += (p.accelerationY * dt) / PhysicsConstants.FP_SCALE;
+
+        // Apply damping:  vel *= dampingFactor
+        p.velocityX = (p.velocityX * (long)(p.damping * PhysicsConstants.FP_SCALE)) / PhysicsConstants.FP_SCALE;
+        p.velocityY = (p.velocityY * (long)(p.damping * PhysicsConstants.FP_SCALE)) / PhysicsConstants.FP_SCALE;
+
+        return p;
     }
 
-    public static Particle2D TempIntegrate(Particle2D particle, float dt)
-    {
-        Particle2D temp = new Particle2D();
+    //public static Particle2D TempIntegrate(Particle2D particle, float dt)
+    //{
+    //    Particle2D temp = new Particle2D();
         
-        //this transfrom position will not work
-        temp.transform.position = particle.transform.position;
-        temp.velocity = particle.velocity;
-        temp.acceleration = particle.acceleration;
-        temp.inverseMass = particle.inverseMass;
-        temp.damping = particle.damping;
+    //    //this transfrom position will not work
+    //    temp.transform.position = particle.transform.position;
+    //    temp.velocity = particle.velocity;
+    //    temp.acceleration = particle.acceleration;
+    //    temp.inverseMass = particle.inverseMass;
+    //    temp.damping = particle.damping;
         
         
-        temp.transform.position += (temp.velocity * dt).ToVector3(0);
+    //    temp.transform.position += (temp.velocity * dt).ToVector3(0);
 
-        temp.acceleration = temp.accumulatedForces * temp.inverseMass + temp.gravity;
+    //    temp.acceleration = temp.accumulatedForces * temp.inverseMass + temp.gravity;
 
-        temp.velocity += temp.acceleration * dt;
-        temp.velocity *= Mathf.Pow(temp.damping, dt);
+    //    temp.velocity += temp.acceleration * dt;
+    //    temp.velocity *= Mathf.Pow(temp.damping, dt);
         
-        return temp;
-    }
+    //    return temp;
+    //}
 }
 
 public static class VectorExtensions
