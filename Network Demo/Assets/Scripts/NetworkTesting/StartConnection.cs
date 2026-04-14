@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Fusion;
 using Fusion.Sockets;
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -10,11 +11,28 @@ public class StartConnection : MonoBehaviour, INetworkRunnerCallbacks
     
     private NetworkRunner _runner;
     
+    string name = "EMPTY";
+    
     [SerializeField] private NetworkPrefabRef _playerPrefab;
+    [SerializeField] private TMP_InputField inputText;
+    [SerializeField] private TMP_Text _text;
     private Dictionary<PlayerRef, NetworkObject> _spawnedCharacters = new Dictionary<PlayerRef, NetworkObject>();
 
     async void StartGame(GameMode mode)
     {
+        
+        if (mode == GameMode.Host)
+        {
+            //generate a room name
+            name = CreateRoomName().ToString();
+            _text.text = name;
+
+        }
+        else
+        { 
+            name = inputText.text;
+        }
+    
         // Create the Fusion runner and let it know that we will be providing user input
         _runner = gameObject.AddComponent<NetworkRunner>();
         _runner.ProvideInput = true;
@@ -26,14 +44,27 @@ public class StartConnection : MonoBehaviour, INetworkRunnerCallbacks
             sceneInfo.AddSceneRef(scene, LoadSceneMode.Additive);
         }
 
+      
+        
         // Start or join (depends on gamemode) a session with a specific name
         await _runner.StartGame(new StartGameArgs()
         {
             GameMode = mode,
-            SessionName = "TestRoom3",
+            SessionName = name,
             Scene = scene,
             SceneManager = gameObject.AddComponent<NetworkSceneManagerDefault>()
         });
+    }
+
+
+    int CreateRoomName()
+    {
+        return UnityEngine.Random.Range(0, 10000);
+    }
+
+    public void SetRoom(string name)
+    {
+        this.name = name;
     }
     
     //private void OnGUI()
