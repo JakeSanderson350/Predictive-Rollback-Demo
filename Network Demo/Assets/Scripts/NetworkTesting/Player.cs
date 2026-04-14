@@ -29,32 +29,19 @@ public class Player : NetworkBehaviour
     
     private void Awake()
     {
-        //test = new(2);
+        //get the local physics movment comp
         pm = GetComponent<PlayerMovementPhysics>();
-        //test.InitSimulation(Vector3.zero, pm);
-
-      
     }
-
-    void Update()
-    {
-        if (HasInputAuthority)
-        {
-            transform.position = Vector3.Lerp(LocalSimulationManager.instance.GetLocalPosition(), serverInputPosition, 0.3f);
-            //set the position
-            //transform.position = LocalSimulationManager.instance.GetLocalPosition();
-        }
-    }
-
-
+    
     public override void Spawned()
     {
         //get a change detector from photon
         _changeDetector = GetChangeDetector(ChangeDetector.Source.SimulationState);
 
+        //sync to the server position
         transform.position = serverInputPosition;
 
-        //make sure to set it to the server position
+        //sync the partical postions to the server position
         pm.particle.positionX = (long)(transform.position.x * PhysicsConstants.FP_SCALE);
         pm.particle.positionY = (long)(transform.position.y * PhysicsConstants.FP_SCALE);
 
@@ -68,10 +55,10 @@ public class Player : NetworkBehaviour
             GetComponent<ServerSimulationManager>().Init();
         }
         
-        //remote player - on client
+        //remote player
         if (Object.IsProxy) // !HasInputAuthority && !HasStateAuthority
         {
-            positionSnapshots = new(); // never created!
+            positionSnapshots = new(); //creates the snapshot buffer for a remote client
         }
     }
 
@@ -93,12 +80,12 @@ public class Player : NetworkBehaviour
                     {
                         if (positionSnapshots != null)
                         {
+                            //read the server position and add it to the buffer
                             var positionSnap = new PositionSnapshot();
                             positionSnap.position = serverInputPosition;
                             positionSnap.tick = Runner.Tick;
 
                             positionSnapshots.Add(positionSnap);
-
                         }
                         
                     }
@@ -107,15 +94,18 @@ public class Player : NetworkBehaviour
             
         }
         
-        
-      
-        
         //not server or current player
         if (Object.IsProxy)
         {
             //get interploated a positons
             var interpoladedPosition = SampleBuffer(Runner.Tick - 2);
             transform.position = interpoladedPosition;
+        }
+        
+        //is current palyer lerp the correct positions
+        if (HasInputAuthority)
+        {
+            transform.position = Vector3.Lerp(serverInputPosition, LocalSimulationManager.instance.GetLocalPosition(), 0.8f);
         }
         
     }
@@ -181,7 +171,7 @@ public class Player : NetworkBehaviour
                 var B = positionSnapshots[i + 1];
                 //lerp and return lerped position to the user;
         
-                // how far between A and B is the target tick?
+              
                 float t = (float)(targetTick - A.tick) / (B.tick - A.tick);
                 Vector3 result = Vector3.Lerp(A.position, B.position, t);
                 
