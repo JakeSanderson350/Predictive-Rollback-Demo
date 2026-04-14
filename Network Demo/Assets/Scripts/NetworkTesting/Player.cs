@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using ExitGames.Client.Photon.StructWrapping;
 using UnityEngine;
 using Fusion;
 
@@ -35,27 +36,43 @@ public class Player : NetworkBehaviour
       
     }
 
+    void Update()
+    {
+        if (HasInputAuthority)
+        {
+            transform.position = Vector3.Lerp(LocalSimulationManager.instance.GetLocalPosition(), serverInputPosition, 0.3f);
+            //set the position
+            //transform.position = LocalSimulationManager.instance.GetLocalPosition();
+        }
+    }
+
 
     public override void Spawned()
     {
         //get a change detector from photon
         _changeDetector = GetChangeDetector(ChangeDetector.Source.SimulationState);
-        
+
+        transform.position = serverInputPosition;
+
+        //make sure to set it to the server position
+        pm.particle.positionX = (long)(transform.position.x * PhysicsConstants.FP_SCALE);
+        pm.particle.positionY = (long)(transform.position.y * PhysicsConstants.FP_SCALE);
+
         //local player - on client
         if (HasInputAuthority)
         {
             inputSnapShots = new();
-            
+
             //this needs to be here so that is done on the network correctly
             GetComponent<LocalSimulationManager>().Init();
             GetComponent<ServerSimulationManager>().Init();
         }
         
-
         //remote player - on client
-        if (!HasInputAuthority && !HasStateAuthority)
-            positionSnapshots = new();
-        
+        if (Object.IsProxy) // !HasInputAuthority && !HasStateAuthority
+        {
+            positionSnapshots = new(); // never created!
+        }
     }
 
     //this is run every frame so good for detecting visual changes on the client
@@ -87,11 +104,14 @@ public class Player : NetworkBehaviour
                     }
                     break;
             }
-           
+            
         }
         
+        
+      
+        
         //not server or current player
-        if (!HasInputAuthority && !HasStateAuthority)
+        if (Object.IsProxy)
         {
             //get interploated a positons
             var interpoladedPosition = SampleBuffer(Runner.Tick - 2);
@@ -104,6 +124,7 @@ public class Player : NetworkBehaviour
     //this can run multiple times per frame
     public override void FixedUpdateNetwork()
     {
+        
         //get the input 
         if (GetInput(out NetworkInputData data))
         {
@@ -118,19 +139,17 @@ public class Player : NetworkBehaviour
                 input.direction = data.direction;
                 input.tick = Runner.Tick;
             
-                inputSnapShots.Add(input);
+               
                 
                 if (Runner.IsForward)
                 {
+                    inputSnapShots.Add(input);
                     LocalSimulationManager.instance.SimulateLocal(Runner.DeltaTime, data.direction);
                     ServerSimulationManager.instance.SimulateServer(serverInputPosition); // Runner.DeltaTime, data.direction
 
                 }
-               // LocalSimulationManager.instance.SimulateLocal(Runner.DeltaTime, data.direction);
                 
             }
-            
-           
         }
         
         //update server physics
@@ -180,7 +199,7 @@ public class Player : NetworkBehaviour
     {
         
         //hard reset
-        if (Vector2.Distance(transform.position, serverInputPosition) > 0.5f)
+        if (Vector2.Distance(transform.position, serverInputPosition) > 2f)
         {
             transform.position = serverInputPosition;
             LocalSimulationManager.instance.SetCorrection(serverInputPosition);
