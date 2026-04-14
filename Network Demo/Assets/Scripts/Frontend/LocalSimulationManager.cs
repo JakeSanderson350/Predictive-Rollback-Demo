@@ -24,13 +24,21 @@ public class LocalSimulationManager : MonoBehaviour
             localSimulationRef = Instantiate(localSimulationPrefab, transform.position, transform.rotation);
             localPm = localSimulationRef.GetComponent<PlayerMovementPhysics>();
             instance = this;
-          
         }
+
+        // Sync spawn point
+        Particle2D particle = localPm.particle;
+        particle.positionX = (long)(playerRef.transform.position.x * PhysicsConstants.FP_SCALE);
+        particle.positionY = (long)(playerRef.transform.position.y * PhysicsConstants.FP_SCALE);
     }
 
     public void SetCorrection(Vector3 position)
     {
         localSimulationRef.transform.position = position;
+
+        Particle2D particle = localPm.particle;
+        particle.positionX = (long)(position.x * PhysicsConstants.FP_SCALE);
+        particle.positionY = (long)(position.y * PhysicsConstants.FP_SCALE);
     }
 
     public void SyncLocalWithServer()

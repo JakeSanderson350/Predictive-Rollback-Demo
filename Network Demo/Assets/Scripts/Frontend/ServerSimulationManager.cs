@@ -16,6 +16,11 @@ public class ServerSimulationManager : MonoBehaviour
         serverSimulationRef = Instantiate(serverSimulationPrefab, transform.position, transform.rotation);
         serverPm = serverSimulationRef.GetComponent<PlayerMovementPhysics>();
         instance = this;
+
+        // Sync spawn point
+        Particle2D particle = serverPm.particle;
+        particle.positionX = (long)(transform.position.x * PhysicsConstants.FP_SCALE);
+        particle.positionY = (long)(transform.position.y * PhysicsConstants.FP_SCALE);
     }
 
     public void SimulateServer(Vector3 serverPos)

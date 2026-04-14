@@ -17,8 +17,8 @@ public static class Integrator
         p.velocityY += (p.accelerationY * dt) / PhysicsConstants.FP_SCALE;
 
         // Apply damping:  vel *= dampingFactor
-        p.velocityX = (p.velocityX * (long)(p.damping * PhysicsConstants.FP_SCALE)) / PhysicsConstants.FP_SCALE;
-        p.velocityY = (p.velocityY * (long)(p.damping * PhysicsConstants.FP_SCALE)) / PhysicsConstants.FP_SCALE;
+        p.velocityX = (p.velocityX * p.damping) / PhysicsConstants.FP_SCALE;
+        p.velocityY = (p.velocityY * p.damping) / PhysicsConstants.FP_SCALE;
 
         return p;
     }

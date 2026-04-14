@@ -8,7 +8,7 @@ public static class PhysicsConstants
 
     public const int FP_SCALE = 1_000_000;
 
-    public const int FP_DAMPING_FACTOR = 999833; // 0.999833 * 1_000_000
+    public const int FP_DAMPING_FACTOR = 800000; // 0.999833 * 1_000_000
 
     // Gravity
     public const int FP_GRAVITY_X = 0;

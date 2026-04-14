@@ -128,7 +128,7 @@ MonoBehaviour:
   accumulatedForceX: 0
   accumulatedForceY: 0
   inverseMass: 1
-  damping: 0.8
+  damping: 800000
 --- !u!114 &8797261133761393913
 MonoBehaviour:
   m_ObjectHideFlags: 0

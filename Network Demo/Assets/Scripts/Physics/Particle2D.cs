@@ -22,8 +22,8 @@ public class Particle2D : MonoBehaviour
     // 1/mass
     public long inverseMass;
 
-    // Damping
-    public float damping;
+    // Damping * FP_SCALE
+    public long damping;
 
     /*public void FixedUpdate()
     {
@@ -40,7 +40,7 @@ public class Particle2D : MonoBehaviour
         // Apply force from each attached ForceGenerator component
         System.Array.ForEach(GetComponents<ForceGenerator>(), generator => { if (generator.enabled) generator.UpdateForce(this); });
 
-        Integrator.Integrate(this, (long)(dt * PhysicsConstants.FP_SCALE));
+        Integrator.Integrate(this, PhysicsConstants.FP_DT);
         
         ClearForces();
 
