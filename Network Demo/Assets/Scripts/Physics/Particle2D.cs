@@ -35,6 +35,12 @@ public class Particle2D : MonoBehaviour
         DoFixedUpdate(dt);
     }
     
+    public void TickWithTransform(float dt)
+    {
+        DoFixedUpdate(dt);
+        ApplyStateToTransform();
+    }
+    
     public void DoFixedUpdate(float dt)
     {
         // Apply force from each attached ForceGenerator component
@@ -44,7 +50,7 @@ public class Particle2D : MonoBehaviour
         
         ClearForces();
 
-        ApplyStateToTransform();
+        //ApplyStateToTransform();
     }
 
     public void ClearForces()

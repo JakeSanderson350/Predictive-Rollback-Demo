@@ -71,7 +71,8 @@ public class LocalSimulationManager : MonoBehaviour
     {
         localPm.SetMoveInput(dir);
         localPm.Tick();
-        localPm.particle.Tick(dt);
+        //apply local simulation with transform
+        localPm.particle.TickWithTransform(dt);
     }
 
     //return local simulation position
