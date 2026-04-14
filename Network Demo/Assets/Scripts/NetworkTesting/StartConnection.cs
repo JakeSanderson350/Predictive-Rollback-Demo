@@ -243,5 +243,9 @@ public class StartConnection : MonoBehaviour, INetworkRunnerCallbacks
         //PhotonNetwork.NetworkingClient.LoadBalancingPeer.NetworkSimulationSettings.OutgoingLag = 200; // ms
     }
 
+    public void DisconnectPlayer()
+    {
+        _runner.Shutdown();
+    }
 
 }

@@ -79,4 +79,9 @@ public class LocalSimulationManager : MonoBehaviour
     {
         return localSimulationRef.transform.position;
     }
+    
+    private void OnDestroy()
+    {
+        Destroy(localSimulationRef);
+    }
 }

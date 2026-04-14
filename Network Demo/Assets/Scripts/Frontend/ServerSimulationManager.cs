@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class ServerSimulationManager : MonoBehaviour
@@ -38,5 +39,10 @@ public class ServerSimulationManager : MonoBehaviour
         {
             serverSimulationRef.transform.position = transform.position;
         }
+    }
+
+    private void OnDestroy()
+    {
+        Destroy(serverSimulationRef);
     }
 }
