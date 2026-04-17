@@ -164,7 +164,7 @@ public class StartConnection : MonoBehaviour, INetworkRunnerCallbacks
 
     public void OnConnectFailed(NetworkRunner runner, NetAddress remoteAddress, NetConnectFailedReason reason)
     {
-        inputText.text = "enter code...";
+
     }
 
     public void OnUserSimulationMessage(NetworkRunner runner, SimulationMessagePtr message)

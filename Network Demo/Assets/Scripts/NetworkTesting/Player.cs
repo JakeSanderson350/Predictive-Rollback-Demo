@@ -29,6 +29,10 @@ public class Player : NetworkBehaviour
 
     private float timer = 0;
     private const float MAX_TIMER = 2f;
+
+    public bool PredictionEnabled = true;
+    public bool ReconciliationEnabled = true;
+    public bool InterpolationEnabled = true;
     
     private void Awake()
     {
@@ -109,6 +113,7 @@ public class Player : NetworkBehaviour
         }
         
         //is current palyer lerp the correct positions
+        // THIS IS INTERPOLATION!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         if (HasInputAuthority)
         {
             transform.position = Vector3.Lerp(LocalSimulationManager.instance.GetLocalPosition(), serverInputPosition, 0.2f);
@@ -159,6 +164,7 @@ public class Player : NetworkBehaviour
                 input.direction = data.direction;
                 input.tick = Runner.Tick;
                 
+                // THIS IS PREDICTION!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                 if (Runner.IsForward)
                 {
                     inputSnapShots.Add(input);
@@ -222,6 +228,9 @@ public class Player : NetworkBehaviour
     //check for the servers position then check that against current position if it is to far hard reset
     private void Reconciliation(float targetTick)
     {
+        if (!ReconciliationEnabled)
+            return;
+
         //save local postion for reconciliation
         Vector3 localPos = LocalSimulationManager.instance.GetLocalPosition();
         
