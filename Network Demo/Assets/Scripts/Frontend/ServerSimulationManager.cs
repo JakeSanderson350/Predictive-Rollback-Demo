@@ -22,6 +22,8 @@ public class ServerSimulationManager : MonoBehaviour
         Particle2D particle = serverPm.particle;
         particle.positionX = (long)(transform.position.x * PhysicsConstants.FP_SCALE);
         particle.positionY = (long)(transform.position.y * PhysicsConstants.FP_SCALE);
+
+        ClientEventManager.instance.ServerShowerEnabled.AddListener(UpdateShowServer);
     }
 
     public void SimulateServer(Vector3 serverPos)
@@ -41,8 +43,16 @@ public class ServerSimulationManager : MonoBehaviour
         }
     }
 
+    void UpdateShowServer(bool value)
+    {
+        //serverSimulationRef.SetActive(value);
+        serverSimulationRef.GetComponent<SpriteRenderer>().enabled = value;
+    }
+
     private void OnDestroy()
     {
+        ClientEventManager.instance.ServerShowerEnabled.RemoveListener(UpdateShowServer);
+
         Destroy(serverSimulationRef);
     }
 }

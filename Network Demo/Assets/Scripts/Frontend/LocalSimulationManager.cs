@@ -36,6 +36,8 @@ public class LocalSimulationManager : MonoBehaviour
              
             }
         }
+
+        ClientEventManager.instance.ClientShowerEnabled.AddListener(UpdateShowLocal);
     }
 
     public void SetCorrection(Vector3 position)
@@ -80,9 +82,19 @@ public class LocalSimulationManager : MonoBehaviour
     {
         return localSimulationRef.transform.position;
     }
+
+    void UpdateShowLocal(bool value)
+    {
+        //localSimulationRef.SetActive(value);
+        localSimulationRef.GetComponent<SpriteRenderer>().enabled = value;
+    }
+
+
     
     private void OnDestroy()
     {
+        ClientEventManager.instance.ClientShowerEnabled.RemoveListener(UpdateShowLocal);
+
         Destroy(localSimulationRef);
     }
 }

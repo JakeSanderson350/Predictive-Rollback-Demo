@@ -30,10 +30,15 @@ public class Player : NetworkBehaviour
     private float timer = 0;
     private const float MAX_TIMER = 2f;
 
-    public bool PredictionEnabled = true;
-    public bool ReconciliationEnabled = true;
-    public bool InterpolationEnabled = true;
-    
+    bool PredictionEnabled = true;
+    void SetPredictionEnabled(bool value) {  PredictionEnabled = value; }
+
+    bool ReconciliationEnabled = true;
+    void SetReconciliationEnabled(bool value) { ReconciliationEnabled = value; }
+
+    bool InterpolationEnabled = true;
+    void SetInterpolationEnabled(bool value) { InterpolationEnabled = value; }
+
     private void Awake()
     {
         //get the local physics movment comp
@@ -60,6 +65,10 @@ public class Player : NetworkBehaviour
             //this needs to be here so that is done on the network correctly
             GetComponent<LocalSimulationManager>().Init();
             GetComponent<ServerSimulationManager>().Init();
+
+            ClientEventManager.instance.ReconciliationEnabled.AddListener(SetReconciliationEnabled);
+            ClientEventManager.instance.PredictionEnabled.AddListener(SetPredictionEnabled);
+            ClientEventManager.instance.InterpolationEnabled.AddListener(SetInterpolationEnabled);
         }
         
         //remote player
@@ -111,10 +120,10 @@ public class Player : NetworkBehaviour
             var interpoladedPosition = SampleBuffer(Runner.Tick - 2);
             transform.position = interpoladedPosition;
         }
-        
-        //is current palyer lerp the correct positions
+
         // THIS IS INTERPOLATION!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        if (HasInputAuthority)
+        //is current palyer lerp the correct positions
+        if (HasInputAuthority && InterpolationEnabled)
         {
             transform.position = Vector3.Lerp(LocalSimulationManager.instance.GetLocalPosition(), serverInputPosition, 0.2f);
         }
@@ -165,7 +174,7 @@ public class Player : NetworkBehaviour
                 input.tick = Runner.Tick;
                 
                 // THIS IS PREDICTION!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                if (Runner.IsForward)
+                if (Runner.IsForward && PredictionEnabled)
                 {
                     inputSnapShots.Add(input);
                     LocalSimulationManager.instance.SimulateLocal(Runner.DeltaTime, data.direction);
@@ -283,5 +292,16 @@ public class Player : NetworkBehaviour
         //remove based off of network tick
         inputSnapShots.RemoveAll(s => s.tick < Runner.Tick - 60);
     }
-    
+
+    private void OnDestroy()
+    {
+        if (HasInputAuthority)
+        {
+            ClientEventManager.instance.ReconciliationEnabled.RemoveListener(SetReconciliationEnabled);
+            ClientEventManager.instance.PredictionEnabled.RemoveListener(SetPredictionEnabled);
+            ClientEventManager.instance.InterpolationEnabled.RemoveListener(SetInterpolationEnabled);
+        }
+
+    }
+
 }
