@@ -174,10 +174,14 @@ public class Player : NetworkBehaviour
                 input.tick = Runner.Tick;
                 
                 // THIS IS PREDICTION!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                if (Runner.IsForward && PredictionEnabled)
-                {
-                    inputSnapShots.Add(input);
-                    LocalSimulationManager.instance.SimulateLocal(Runner.DeltaTime, data.direction);
+                if (Runner.IsForward)
+                {                  
+                    if(PredictionEnabled)
+                    {
+                         inputSnapShots.Add(input);
+                         LocalSimulationManager.instance.SimulateLocal(Runner.DeltaTime, data.direction);
+                    }
+                       
                     ServerSimulationManager.instance.SimulateServer(serverInputPosition); // Runner.DeltaTime, data.direction
 
                 }
