@@ -28,13 +28,33 @@ public class Player : NetworkBehaviour
 
 
     private float timer = 0;
-    private const float MAX_TIMER = 2f;
+    private const float MAX_TIMER = 1.5f;
 
     bool PredictionEnabled = true;
-    void SetPredictionEnabled(bool value) {  PredictionEnabled = value; }
+
+    void SetPredictionEnabled(bool value)
+    {
+        //inputSnapShots?.Clear();
+        //positionSnapshots?.Clear();
+        
+        //LocalSimulationManager.instance.SetCorrection(serverInputPosition);
+        
+        // Resync the particle so local physics starts from the right place
+        //pm.particle.positionX = (long)(serverInputPosition.x * PhysicsConstants.FP_SCALE);
+       //pm.particle.positionY = (long)(serverInputPosition.y * PhysicsConstants.FP_SCALE);
+        
+        transform.position = serverInputPosition;
+        PredictionEnabled = value;
+    }
 
     bool ReconciliationEnabled = true;
-    void SetReconciliationEnabled(bool value) { ReconciliationEnabled = value; }
+
+    void SetReconciliationEnabled(bool value)
+    {
+        inputSnapShots?.Clear();
+        positionSnapshots?.Clear();
+        ReconciliationEnabled = value;
+    }
 
     bool InterpolationEnabled = true;
     void SetInterpolationEnabled(bool value) { InterpolationEnabled = value; }
@@ -91,6 +111,7 @@ public class Player : NetworkBehaviour
                     {
                         //reconsiliation
                         Reconciliation(Runner.Tick);
+                        timer = 0;
                     }
                     else
                     {
@@ -125,7 +146,14 @@ public class Player : NetworkBehaviour
         //is current palyer lerp the correct positions
         if (HasInputAuthority && InterpolationEnabled)
         {
-            transform.position = Vector3.Lerp(LocalSimulationManager.instance.GetLocalPosition(), serverInputPosition, 0.2f);
+            if (PredictionEnabled)
+            {
+                transform.position = Vector3.Lerp(LocalSimulationManager.instance.GetLocalPosition(), serverInputPosition, 0.2f);
+            }
+            else
+            {
+                transform.position = serverInputPosition;
+            }
         }
 
         //read for the host
@@ -144,7 +172,7 @@ public class Player : NetworkBehaviour
 
             if (timer > MAX_TIMER)
             {
-                Reconciliation(Runner.Tick);
+                ReconciliationWithOutChecks(Runner.Tick);
                 timer = 0;
             }
         }
@@ -199,11 +227,14 @@ public class Player : NetworkBehaviour
             pm.particle.Tick(Runner.DeltaTime);
             
             //was using the transfrom so the floating points where corrupping --> change to read from teh physics position for no coruption
-            serverInputPosition = new Vector3(
+            var newPos = new Vector3(
                 pm.particle.positionX / (float)PhysicsConstants.FP_SCALE,
                 pm.particle.positionY / (float)PhysicsConstants.FP_SCALE,
                 0);
             
+            if(newPos != serverInputPosition)
+                serverInputPosition =  newPos;
+
         }
         
         
@@ -243,7 +274,17 @@ public class Player : NetworkBehaviour
     {
         if (!ReconciliationEnabled)
             return;
+        
+        
+        if (!PredictionEnabled)
+        {
+            // No local simulation to reconcile — just snap directly to server
+            transform.position = serverInputPosition;
+            LocalSimulationManager.instance.SetCorrection(serverInputPosition);
+            return;
+        }
 
+        
         //save local postion for reconciliation
         Vector3 localPos = LocalSimulationManager.instance.GetLocalPosition();
         
@@ -258,6 +299,54 @@ public class Player : NetworkBehaviour
             return;
         }
         
+        //resimulate based off of positon
+        for (int i = 0; i < inputSnapShots.Count - 1; i++)
+        {
+            if (inputSnapShots[i].tick <= targetTick
+                && inputSnapShots[i + 1].tick >= targetTick)
+            {
+                for (int j = i; j < inputSnapShots.Count; j++)
+                {
+                    pm.SetMoveInput(inputSnapShots[j].direction);
+                    pm.Tick();
+                    pm.particle.Tick(Runner.DeltaTime);
+                    
+                    //also resimulate on local
+                    LocalSimulationManager.instance.SimulateLocal(Runner.DeltaTime, inputSnapShots[j].direction);
+                }
+                break;
+            }
+           
+        }
+        
+        
+    }
+    
+    private void ReconciliationWithOutChecks(float targetTick)
+    {
+        if (!ReconciliationEnabled)
+            return;
+        
+        
+        if (!PredictionEnabled)
+        {
+            // No local simulation to reconcile — just snap directly to server
+            transform.position = serverInputPosition;
+            LocalSimulationManager.instance.SetCorrection(serverInputPosition);
+            return;
+        }
+
+        
+        //save local postion for reconciliation
+        Vector3 localPos = LocalSimulationManager.instance.GetLocalPosition();
+        
+        if (Vector2.Distance(localPos, serverInputPosition) < 0.01f)
+            return;
+        
+        
+        transform.position = serverInputPosition;
+        LocalSimulationManager.instance.SetCorrection(serverInputPosition);
+     
         //resimulate based off of positon
         for (int i = 0; i < inputSnapShots.Count - 1; i++)
         {
